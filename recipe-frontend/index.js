@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', function(){
     randomRecipe()
 });
 
+// FIND A RANDOM RECIPE
+
 function randomRecipe(){
     const elements = []
     const title = document.createElement('h1')
