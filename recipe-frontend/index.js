@@ -10,6 +10,18 @@ const recipeDisplay = () => document.querySelector("#recipe-display");
 const recipeNav = () => document.querySelector("#recipe-nav")
 const recipeButton = () => document.getElementById('Random Recipe')
 const saveRecipeButton = () => document.getElementById('Save Recipe')
+const clearRecipeButton = () => document.getElementById('Clear Recipe')
+
+
+// Function to check if there is a recipe displayed
+function haveRecipe(){
+    if (recipeDisplay().childElementCount > 0){
+        return true
+    }
+    else{
+        return false
+    }
+}
 
 // FUNCTIONS TO CREATE BUTTONS
 const buttonCreator = (text, classOption = "", styleOption = "") =>  {
@@ -20,32 +32,6 @@ const buttonCreator = (text, classOption = "", styleOption = "") =>  {
     button.innerText = text
     return button;
 }
-
-// EVENT LISTENERS
-const randomRecipeEvent = function(){
-    recipeButton().addEventListener('click', (e) => {
-        randomRecipe()
-    })
-}
-const saveRecipeEvent = function(){
-    saveRecipeButton().addEventListener('click', (e) => {
-        saveRecipe()
-    })
-}
-
-function haveRecipe(){
-    if (recipeDisplay().childElementCount > 0){
-        if ()
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function(){
-    recipeNav().appendChild(buttonCreator('Random Recipe', '', ''))
-    recipeNav().appendChild(buttonCreator('Save Recipe', '', ''))
-    randomRecipeEvent()
-    saveRecipeEvent()
-
-});
 
 // FUNCTION THAT CREATES RANDOM RECIPE USING FETCH
 
@@ -59,32 +45,43 @@ function randomRecipe(){
     instructions.id = 'instructions'      
     
     elements.push(title, summary, instructions)
-
+    
     fetch(recipeURL + 'random?number=1&' + apiKey)
-        .then(response => response.json())
-        .then(data => {
-            title.innerHTML = (data.recipes[0].title)
-            summary.innerHTML += "<br>" + data.recipes[0].summary
-            instructions.innerHTML = "<br>" + data.recipes[0].instructions
-        });
-
+    .then(response => response.json())
+    .then(data => {
+        title.innerHTML = (data.recipes[0].title)
+        summary.innerHTML += "<br>" + data.recipes[0].summary
+        instructions.innerHTML = "<br>" + data.recipes[0].instructions
+    });
+    
     function appendDisplays(arrayOfElements){
         
-        let children = Array.prototype.slice.call( recipeDisplay().children )
-        if (children.length > 0){
-            for (const index in children){
-                recipeDisplay().removeChild(children[index])
-            }
-        }
+        clearRecipe()
+        
         arrayOfElements.forEach(el => {
             recipeDisplay().appendChild(el)
         })
-
+        
     }
-
-    appendDisplays(elements)
-
     
+    appendDisplays(elements)
+    
+    
+}
+
+// FUNCTION THAT CLEARS RECIPE
+
+const clearRecipe = function(){
+    let children = Array.prototype.slice.call( recipeDisplay().children)
+    if (children.length > 0){
+        for (const index in children){
+            recipeDisplay().removeChild(children[index])
+        }
+        return true 
+    }
+    else{
+        return false
+    }
 }
 
 // FUNCTION THAT SAVES RECIPE INTO RAILS BACKEND
@@ -108,9 +105,43 @@ function saveRecipe(){
     .then(recipe => {
         console.log(recipe)
     })
-
+    
 }
 
 
+// EVENT LISTENERS
 
 
+const randomRecipeEvent = function(){
+    recipeButton().addEventListener('click', (e) => {
+        randomRecipe()
+    })
+}
+const saveRecipeEvent = function(){
+    saveRecipeButton().addEventListener('click', (e) => {
+        if (haveRecipe()){
+            saveRecipe()
+        }else{
+            alert('Pick a recipe to save.')
+        }
+    })
+}
+
+const clearRecipeEvent = function(){
+    clearRecipeButton().addEventListener('click', (e) => {
+        clearRecipe()
+    })
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+    recipeNav().appendChild(buttonCreator('Random Recipe', '', ''))
+    recipeNav().appendChild(buttonCreator('Save Recipe', '', ''))
+    recipeNav().appendChild(buttonCreator('Clear Recipe'))
+    randomRecipeEvent()
+    saveRecipeEvent()
+    clearRecipeEvent()
+    
+    
+});
+
+// END EVENT LISTENERS
