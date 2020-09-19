@@ -102,8 +102,8 @@ function saveRecipe(){
         body: JSON.stringify(strongParams)
     })
     .then(resp => resp.json())
-    .then(recipe => {
-        console.log(recipe)
+    .then((recipe) => {
+        console.log(recipe.status)
     })
     
 }

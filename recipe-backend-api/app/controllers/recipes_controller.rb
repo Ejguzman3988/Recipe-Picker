@@ -15,8 +15,7 @@ class RecipesController < ApplicationController
 
   # POST /recipes
   def create
-    @recipe = Recipe.new(recipe_params)
-
+    @recipe = Recipe.find_or_initialize_by(recipe_params)
     if @recipe.save
       render json: @recipe, status: :created, location: @recipe
     else
