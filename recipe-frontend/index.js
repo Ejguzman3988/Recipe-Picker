@@ -11,6 +11,10 @@ const recipeNav = () => document.querySelector("#recipe-nav")
 const recipeButton = () => document.getElementById('Random Recipe')
 const saveRecipeButton = () => document.getElementById('Save Recipe')
 const clearRecipeButton = () => document.getElementById('Clear Recipe')
+const sessionForm = () => document.querySelector('form')
+const errors = () => document.getElementById('errors')
+ 
+
 
 
 // Function to check if there is a recipe displayed
@@ -133,6 +137,54 @@ const clearRecipeEvent = function(){
     })
 }
 
+const sessionFormEvent = function(){
+    sessionForm().addEventListener('submit', function(e){
+        e.preventDefault()
+        sessionLog()
+    })
+}
+
+function sessionLog(){
+    const strongParams = {
+        user: {
+            username: document.getElementById('username').value,
+            password_digest: document.getElementById('password').value,
+        }
+    }
+    fetch(railsURL + 'users', {
+        method: 'post',
+        headers: {
+            "accept": "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(strongParams)
+    })
+    .then(resp => resp.json())
+    .then((user) => {
+        checkUser(user.username, user.password)
+        console.log(user)
+    })
+    // sessionForm().remove()
+}
+
+function checkUser(username, password){
+    if (!(Array.isArray(username) && Array.isArray(password))){
+        sessionForm().remove()
+        alert ('logged in')
+    }else{
+        username.forEach(error => {
+            let li = document.createElement('li')
+            li.innerHTML = 'User Name ' + error
+            errors().append(li)
+        })
+        password.forEach(error => {
+            let li = document.createElement('li')
+            li.innerHTML = 'Password ' + error
+            errors().append(li)
+        })
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function(){
     recipeNav().appendChild(buttonCreator('Random Recipe', '', ''))
     recipeNav().appendChild(buttonCreator('Save Recipe', '', ''))
@@ -140,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function(){
     randomRecipeEvent()
     saveRecipeEvent()
     clearRecipeEvent()
-    
+    sessionFormEvent()
     
 });
 
