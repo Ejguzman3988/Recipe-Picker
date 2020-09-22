@@ -3,7 +3,8 @@ class RecipesController < ApplicationController
 
   # GET /recipes
   def index
-    @recipes = Recipe.all
+    @user = User.find(params[:user_id])
+    @recipes = @user.recipes
 
     render json: @recipes
   end
@@ -15,11 +16,16 @@ class RecipesController < ApplicationController
 
   # POST /recipes
   def create
+    @user = User.find(params[:user_id])
     @recipe = Recipe.find_or_initialize_by(recipe_params)
-    if @recipe.save
-      render json: @recipe, status: :created, location: @recipe
+    if (@recipe.id.nil?)
+      @user.recipes << @recipe
+    end
+
+    if @user.save
+      render json: @recipe, status: :created
     else
-      render json: @recipe.errors, status: :unprocessable_entity
+      render json: @user.errors, status: :unprocessable_entity
     end
   end
 
@@ -40,7 +46,8 @@ class RecipesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_recipe
-      @recipe = Recipe.find(params[:id])
+      @user = User.find(params[:user_id])
+      @recipe = @user.recipes.find(params[:id])
     end
 
     # Only allow a trusted parameter "white list" through.

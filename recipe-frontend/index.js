@@ -11,8 +11,11 @@ const recipeNav = () => document.querySelector("#recipe-nav")
 const recipeButton = () => document.getElementById('Random Recipe')
 const saveRecipeButton = () => document.getElementById('Save Recipe')
 const clearRecipeButton = () => document.getElementById('Clear Recipe')
+const userRecipes = () => document.getElementById('My Recipes')
 const sessionForm = () => document.querySelector('form')
 const errors = () => document.getElementById('errors')
+var signInId
+
  
 
 
@@ -38,8 +41,7 @@ const buttonCreator = (text, classOption = "", styleOption = "") =>  {
 }
 
 // FUNCTION THAT CREATES RANDOM RECIPE USING FETCH
-
-function randomRecipe(){
+function createElements(){
     const elements = []
     const title = document.createElement('h1')
     title.id = 'title'
@@ -49,7 +51,12 @@ function randomRecipe(){
     instructions.id = 'instructions'      
     
     elements.push(title, summary, instructions)
+    return elements
+}
+function randomRecipe(){
     
+    [title, summary, instructions] = createElements()
+
     fetch(recipeURL + 'random?number=1&' + apiKey)
     .then(response => response.json())
     .then(data => {
@@ -57,21 +64,20 @@ function randomRecipe(){
         summary.innerHTML += "<br>" + data.recipes[0].summary
         instructions.innerHTML = "<br>" + data.recipes[0].instructions
     });
-    
-    function appendDisplays(arrayOfElements){
-        
-        clearRecipe()
-        
-        arrayOfElements.forEach(el => {
-            recipeDisplay().appendChild(el)
-        })
-        
-    }
-    
+    const elements = []
+    elements.push(title,summary,instructions)
     appendDisplays(elements)
+}
+function appendDisplays(arrayOfElements){
     
+    clearRecipe()
+    
+    arrayOfElements.forEach(el => {
+        recipeDisplay().appendChild(el)
+    })
     
 }
+
 
 // FUNCTION THAT CLEARS RECIPE
 
@@ -95,10 +101,11 @@ function saveRecipe(){
             title: document.getElementById('title').innerText,
             summary: document.getElementById('summary').innerText,
             instructions: document.getElementById('instructions').innerHTML
-        }
+        },
+        user_id: signInId
     }
-    fetch(railsURL + 'recipes', {
-        method: 'post',
+    fetch(railsURL + 'users/' + signInId + '/recipes', {
+        method: 'POST',
         headers: {
             "accept": "application/json",
             "Content-Type": "application/json"
@@ -107,7 +114,7 @@ function saveRecipe(){
     })
     .then(resp => resp.json())
     .then((recipe) => {
-        console.log(recipe.status)
+        console.log(recipe)
     })
     
 }
@@ -123,9 +130,12 @@ const randomRecipeEvent = function(){
 }
 const saveRecipeEvent = function(){
     saveRecipeButton().addEventListener('click', (e) => {
-        if (haveRecipe()){
+        if(signInId === undefined){
+            alert('Sign in to save the recipe')
+        }else if (haveRecipe()){
             saveRecipe()
-        }else{
+        }
+        else{
             alert('Pick a recipe to save.')
         }
     })
@@ -144,11 +154,47 @@ const sessionFormEvent = function(){
     })
 }
 
+const userRecipesEvent = function(){
+    userRecipes().addEventListener('click', function(e){
+        backendUserRecipes();
+    })
+}
+
+function backendUserRecipes(){
+    clearRecipe()
+
+    let ul = document.createElement('ul')
+    recipeDisplay().append(ul)
+    if (signInId === undefined){
+        alert('Sign in to check your recipes.')
+    }else{
+        fetch(railsURL + 'users/' + signInId + '/recipes')
+            .then(resp => resp.json())
+            .then((recipes) => {
+                console.log(recipes)
+                recipes.forEach(recipe => {
+                    let li = document.createElement('li')
+                    li.innerHTML = recipe.title
+                    ul.append(li)
+                    li.addEventListener('click', function(){
+                        [title, summary, instructions] = createElements()
+                        const elements = []
+                        title.innerHTML = (recipe.title)
+                        summary.innerHTML += "<br>" + recipe.summary
+                        instructions.innerHTML = "<br>" + recipe.instructions
+                        elements.push(title,summary,instructions)
+                        appendDisplays(elements)
+                    })
+                })
+            })
+    }
+}
+
 function sessionLog(){
     const strongParams = {
         user: {
             username: document.getElementById('username').value,
-            password_digest: document.getElementById('password').value,
+            password: document.getElementById('password').value,
         }
     }
     fetch(railsURL + 'users', {
@@ -161,17 +207,29 @@ function sessionLog(){
     })
     .then(resp => resp.json())
     .then((user) => {
-        checkUser(user.username, user.password)
-        console.log(user)
+        
+        checkUser(user.username, user.password, user.id)
+        return true
     })
+    return false
     // sessionForm().remove()
 }
 
-function checkUser(username, password){
-    if (!(Array.isArray(username) && Array.isArray(password))){
-        sessionForm().remove()
-        alert ('logged in')
-    }else{
+function checkUser(username, password, id){
+    if(errors().children){
+        Array.prototype.slice.call(errors().children).forEach(child => {
+            child.remove()
+        })
+    }
+    if(username === undefined && password === undefined){
+        let li = document.createElement('li')
+        li.innerHTML = "Password is incorrect"
+        errors().append(li)
+    }else if (!(Array.isArray(username) || Array.isArray(password))){
+        sessionForm().style.display = "none"
+        signInId = id
+    }else
+    {
         username.forEach(error => {
             let li = document.createElement('li')
             li.innerHTML = 'User Name ' + error
@@ -181,7 +239,8 @@ function checkUser(username, password){
             let li = document.createElement('li')
             li.innerHTML = 'Password ' + error
             errors().append(li)
-        })
+            
+        })    
     }
 }
 
@@ -189,10 +248,12 @@ document.addEventListener('DOMContentLoaded', function(){
     recipeNav().appendChild(buttonCreator('Random Recipe', '', ''))
     recipeNav().appendChild(buttonCreator('Save Recipe', '', ''))
     recipeNav().appendChild(buttonCreator('Clear Recipe'))
+    recipeNav().appendChild(buttonCreator('My Recipes'))
     randomRecipeEvent()
     saveRecipeEvent()
     clearRecipeEvent()
     sessionFormEvent()
+    userRecipesEvent()
     
 });
 
