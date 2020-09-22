@@ -173,6 +173,7 @@ function backendUserRecipes(){
             .then((recipes) => {
                 console.log(recipes)
                 recipes.forEach(recipe => {
+                    //WHERE I WILL CREATE RECIPE OBJS
                     let li = document.createElement('li')
                     li.innerHTML = recipe.title
                     ul.append(li)
