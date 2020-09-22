@@ -41,42 +41,48 @@ const buttonCreator = (text, classOption = "", styleOption = "") =>  {
 }
 
 // FUNCTION THAT CREATES RANDOM RECIPE USING FETCH
-function createElements(){
-    const elements = []
-    const title = document.createElement('h1')
-    title.id = 'title'
-    const summary = document.createElement('p')
-    summary.id = 'summary'
-    const instructions = document.createElement('div')
-    instructions.id = 'instructions'      
+
+// function createElements(){
+//     const elements = []
+//     const title = document.createElement('h1')
+//     title.id = 'title'
+//     const summary = document.createElement('p')
+//     summary.id = 'summary'
+//     const instructions = document.createElement('div')
+//     instructions.id = 'instructions'      
     
-    elements.push(title, summary, instructions)
-    return elements
-}
+//     elements.push(title, summary, instructions)
+//     return elements
+// }
+
 function randomRecipe(){
     
-    [title, summary, instructions] = createElements()
+    // [title, summary, instructions] = createElements()
 
     fetch(recipeURL + 'random?number=1&' + apiKey)
     .then(response => response.json())
-    .then(data => {
-        title.innerHTML = (data.recipes[0].title)
-        summary.innerHTML += "<br>" + data.recipes[0].summary
-        instructions.innerHTML = "<br>" + data.recipes[0].instructions
+    .then(recipesArray => {
+        // title.innerHTML = (data.recipes[0].title)
+        // summary.innerHTML += "<br>" + data.recipes[0].summary
+        // instructions.innerHTML = "<br>" + data.recipes[0].instructions
+        let randomRecipe = recipesArray.recipes[0]
+        const newRecipe = new Recipe(randomRecipe.id, randomRecipe.title, randomRecipe.summary, randomRecipe.instructions)
+        newRecipe.display()
     });
-    const elements = []
-    elements.push(title,summary,instructions)
-    appendDisplays(elements)
-}
-function appendDisplays(arrayOfElements){
-    
-    clearRecipe()
-    
-    arrayOfElements.forEach(el => {
-        recipeDisplay().appendChild(el)
-    })
+    // const elements = []
+    // elements.push(title,summary,instructions)
+    // appendDisplays(elements)
     
 }
+// function appendDisplays(arrayOfElements){
+    
+//     clearRecipe()
+    
+//     arrayOfElements.forEach(el => {
+//         recipeDisplay().appendChild(el)
+//     })
+    
+// }
 
 
 // FUNCTION THAT CLEARS RECIPE
@@ -156,39 +162,40 @@ const sessionFormEvent = function(){
 
 const userRecipesEvent = function(){
     userRecipes().addEventListener('click', function(e){
-        backendUserRecipes();
+        if (signInId === undefined){
+            alert('Please Sign in to view your recipes')
+        }else{
+            Recipe.displayRecipes()
+        }
     })
 }
 
 function backendUserRecipes(){
-    clearRecipe()
-
+    
     let ul = document.createElement('ul')
     recipeDisplay().append(ul)
-    if (signInId === undefined){
-        alert('Sign in to check your recipes.')
-    }else{
-        fetch(railsURL + 'users/' + signInId + '/recipes')
-            .then(resp => resp.json())
-            .then((recipes) => {
-                console.log(recipes)
-                recipes.forEach(recipe => {
-                    //WHERE I WILL CREATE RECIPE OBJS
-                    let li = document.createElement('li')
-                    li.innerHTML = recipe.title
-                    ul.append(li)
-                    li.addEventListener('click', function(){
-                        [title, summary, instructions] = createElements()
-                        const elements = []
-                        title.innerHTML = (recipe.title)
-                        summary.innerHTML += "<br>" + recipe.summary
-                        instructions.innerHTML = "<br>" + recipe.instructions
-                        elements.push(title,summary,instructions)
-                        appendDisplays(elements)
-                    })
-                })
-            })
-    }
+    clearRecipe()
+    fetch(railsURL + 'users/' + signInId + '/recipes')
+        .then(resp => resp.json())
+        .then((recipes) => {
+            console.log(recipes)
+            Recipe.createRecipes(recipes)
+            // recipes.forEach(recipe => {
+            //     //WHERE I WILL CREATE RECIPE OBJS
+            //     let li = document.createElement('li')
+            //     li.innerHTML = recipe.title
+            //     ul.append(li)
+            //     li.addEventListener('click', function(){
+            //         [title, summary, instructions] = createElements()
+            //         const elements = []
+            //         title.innerHTML = (recipe.title)
+            //         summary.innerHTML += "<br>" + recipe.summary
+            //         instructions.innerHTML = "<br>" + recipe.instructions
+            //         elements.push(title,summary,instructions)
+            //         appendDisplays(elements)
+            //     })
+            // })
+    })
 }
 
 function sessionLog(){
@@ -229,6 +236,7 @@ function checkUser(username, password, id){
     }else if (!(Array.isArray(username) || Array.isArray(password))){
         sessionForm().style.display = "none"
         signInId = id
+        backendUserRecipes()
     }else
     {
         username.forEach(error => {
