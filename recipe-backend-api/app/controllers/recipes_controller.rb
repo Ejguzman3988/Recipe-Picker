@@ -40,7 +40,12 @@ class RecipesController < ApplicationController
 
   # DELETE /recipes/1
   def destroy
-    @recipe.destroy
+    SavedRecipe.find_by(user_id: @user.id, recipe_id: @recipe.id).delete
+    if (SavedRecipe.find_by(recipe_id: @recipe.id))
+      @recipe.destroy
+    end
+
+    render json: @recipe
   end
 
   private

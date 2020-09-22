@@ -9,28 +9,133 @@ class Recipe{
     }
 
     display(){
+        const thisRecipe = this
+        
         clearRecipe()
         
+        // Create Elements
         const title = document.createElement('h1')
         const summary = document.createElement('p')
         const instructions = document.createElement('div')
-        
+        const editButton = buttonCreator('Edit Recipe', '', '')
+        const deleteButton = buttonCreator('Delete Recipe', '', '')
+
+
+        // Set Ids
         title.id = 'title'
         summary.id = 'summary'
         instructions.id = 'instructions' 
         
+        // Set values
         title.innerText = this.title
         summary.innerHTML = this.summary
         instructions.innerHTML = this.instructions 
+
+        // Event Listener for buttons
+        editButton.addEventListener('click', editEvent)
+        deleteButton.addEventListener('click', deleteEvent)
+
+        function editEvent(e){
+                
+            let oldForm = document.getElementById('edit form')
+            if (oldForm){
+                oldForm.remove()
+            }
+            
+            const form = document.createElement('form')
+            const titleInput = document.createElement('input')
+            const summaryInput = document.createElement('textarea')
+            const instructionsInput = document.createElement('textarea')
+            const submitFormButton = buttonCreator('Update Recipe')
+            
+            form.id = "edit form"
+            titleInput.type = 'text'
+            summaryInput.col = "30"
+            summaryInput.row = "20"
+            instructionsInput.col = "30"
+            instructionsInput.row = "20"
         
+            titleInput.value = title.innerHTML
+            summaryInput.value = summary.innerHTML
+            instructionsInput.value = instructions.innerHTML
+        
+            submitFormButton.addEventListener('click', function(e){
+                e.preventDefault()
+                
+                const strongParams = {
+                    recipe: {
+                        title: titleInput.value,
+                        summary: summaryInput.value,
+                        instructions: instructionsInput.value
+                    },
+                    user_id: signInId
+                }
+        
+                fetch(railsURL + 'users/' + signInId + "/recipes/" + thisRecipe.id,{
+                    method: 'PATCH',
+                    headers: {
+                        "accept": "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(strongParams)
+                })
+                .then(resp => resp.json())
+                .then((recipe) => {
+                    thisRecipe.title = recipe.title
+                    thisRecipe.summary = recipe.summary
+                    thisRecipe.instructions = recipe.instructions
+                    console.log(recipe)
+                    thisRecipe.display()
+                })   
+            })
+        
+            form.append(titleInput, summaryInput, instructionsInput, submitFormButton)
+        
+            recipeDisplay().prepend(form)
+        
+            editButton.remove()
+        
+        
+        }
+        
+        function deleteEvent(e){
+           
+            const strongParams = {
+                recipe: {
+                    title: document.getElementById('title').innerText,
+                    summary: document.getElementById('summary').innerText,
+                    instructions: document.getElementById('instructions').innerHTML
+                },
+                user_id: signInId
+            }
+        
+            fetch(railsURL + 'users/' + signInId + "/recipes/" + thisRecipe.id,{
+                method: 'DELETE',
+                headers: {
+                    "accept": "application/json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(strongParams)
+            })
+            .then(resp => resp.json())
+            .then((recipe) => {
+                console.log(recipe)
+                let index = Recipe.all.findIndex(obj => obj.id === recipe.id)
+                Recipe.all.splice(index, 1)
+                Recipe.displayRecipes()
+            })  
+        }
+    
+
+        // Append to the display
         recipeDisplay().appendChild(title)
+        if (Recipe.all.find(recipe => recipe.title === this.title)){
+            recipeDisplay().appendChild(editButton)
+            recipeDisplay().appendChild(deleteButton)
+        }
         recipeDisplay().appendChild(summary)
         recipeDisplay().appendChild(instructions)
 
-    }
-
-    displayList(){
-        
     }
 
     static createRecipes(recipes){
@@ -59,7 +164,9 @@ class Recipe{
     }
     static saveRecipe(){
         let recipeTitle = document.getElementById('title').innerText
-        if (this.find_by_title(recipeTitle)){
+        let recipe = this.find_by_title(recipeTitle)
+        
+        if (recipe){
             alert('You have already saved this recipe.')
             return false
         }
@@ -82,9 +189,9 @@ class Recipe{
         })
         .then(resp => resp.json())
         .then((recipe) => {
-            Recipe.create(recipe.id, recipe.title, recipe.summary, recipe.instructions)
-        })
-        
+            let newRecipe = Recipe.create(recipe.id, recipe.title, recipe.summary, recipe.instructions)
+            newRecipe.display()
+        }) 
     }
 
     static find_by_title(recipeTitle){
@@ -96,4 +203,31 @@ class Recipe{
         return false
     }
 
-}
+    static haveRecipe(){
+        if (document.getElementById('summary')){
+            return true
+        }
+        else{
+            return false
+        }
+    }
+
+    // FUNCTION THAT CREATES RANDOM RECIPE USING FETCH
+
+    static randomRecipe(){
+
+        fetch(recipeURL + 'random?number=1&' + apiKey)
+        .then(response => response.json())
+        .then(recipesArray => {
+            // title.innerHTML = (data.recipes[0].title)
+            // summary.innerHTML += "<br>" + data.recipes[0].summary
+            // instructions.innerHTML = "<br>" + data.recipes[0].instructions
+            let randomRecipe = recipesArray.recipes[0]
+            const newRecipe = new Recipe(randomRecipe.id, randomRecipe.title, randomRecipe.summary, randomRecipe.instructions)
+            newRecipe.display()
+        });
+    
+    }
+
+    
+    }
