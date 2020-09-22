@@ -120,7 +120,7 @@ function saveRecipe(){
     })
     .then(resp => resp.json())
     .then((recipe) => {
-        console.log(recipe)
+        Recipe.create(recipe.id, recipe.title, recipe.summary, recipe.instructions)
     })
     
 }
