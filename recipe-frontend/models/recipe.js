@@ -10,7 +10,7 @@ class Recipe{
 
     display(){
         clearRecipe()
-
+        
         const title = document.createElement('h1')
         const summary = document.createElement('p')
         const instructions = document.createElement('div')
@@ -56,6 +56,44 @@ class Recipe{
                 recipe.display()
             })
         })
+    }
+    static saveRecipe(){
+        let recipeTitle = document.getElementById('title').innerText
+        if (this.find_by_title(recipeTitle)){
+            alert('You have already saved this recipe.')
+            return false
+        }
+        
+        const strongParams = {
+            recipe: {
+                title: document.getElementById('title').innerText,
+                summary: document.getElementById('summary').innerText,
+                instructions: document.getElementById('instructions').innerHTML
+            },
+            user_id: signInId
+        }
+        fetch(railsURL + 'users/' + signInId + '/recipes', {
+            method: 'POST',
+            headers: {
+                "accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(strongParams)
+        })
+        .then(resp => resp.json())
+        .then((recipe) => {
+            Recipe.create(recipe.id, recipe.title, recipe.summary, recipe.instructions)
+        })
+        
+    }
+
+    static find_by_title(recipeTitle){
+        for(let recipe of Recipe.all){
+            if (recipe.title === recipeTitle){
+                return recipe
+            }
+        }
+        return false
     }
 
 }

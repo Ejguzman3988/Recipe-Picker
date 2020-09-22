@@ -22,7 +22,7 @@ var signInId
 
 // Function to check if there is a recipe displayed
 function haveRecipe(){
-    if (recipeDisplay().childElementCount > 0){
+    if (document.getElementById('summary')){
         return true
     }
     else{
@@ -42,18 +42,6 @@ const buttonCreator = (text, classOption = "", styleOption = "") =>  {
 
 // FUNCTION THAT CREATES RANDOM RECIPE USING FETCH
 
-// function createElements(){
-//     const elements = []
-//     const title = document.createElement('h1')
-//     title.id = 'title'
-//     const summary = document.createElement('p')
-//     summary.id = 'summary'
-//     const instructions = document.createElement('div')
-//     instructions.id = 'instructions'      
-    
-//     elements.push(title, summary, instructions)
-//     return elements
-// }
 
 function randomRecipe(){
     
@@ -69,20 +57,8 @@ function randomRecipe(){
         const newRecipe = new Recipe(randomRecipe.id, randomRecipe.title, randomRecipe.summary, randomRecipe.instructions)
         newRecipe.display()
     });
-    // const elements = []
-    // elements.push(title,summary,instructions)
-    // appendDisplays(elements)
     
 }
-// function appendDisplays(arrayOfElements){
-    
-//     clearRecipe()
-    
-//     arrayOfElements.forEach(el => {
-//         recipeDisplay().appendChild(el)
-//     })
-    
-// }
 
 
 // FUNCTION THAT CLEARS RECIPE
@@ -101,29 +77,29 @@ const clearRecipe = function(){
 }
 
 // FUNCTION THAT SAVES RECIPE INTO RAILS BACKEND
-function saveRecipe(){
-    const strongParams = {
-        recipe: {
-            title: document.getElementById('title').innerText,
-            summary: document.getElementById('summary').innerText,
-            instructions: document.getElementById('instructions').innerHTML
-        },
-        user_id: signInId
-    }
-    fetch(railsURL + 'users/' + signInId + '/recipes', {
-        method: 'POST',
-        headers: {
-            "accept": "application/json",
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(strongParams)
-    })
-    .then(resp => resp.json())
-    .then((recipe) => {
-        Recipe.create(recipe.id, recipe.title, recipe.summary, recipe.instructions)
-    })
+// function saveRecipe(){
+//     const strongParams = {
+//         recipe: {
+//             title: document.getElementById('title').innerText,
+//             summary: document.getElementById('summary').innerText,
+//             instructions: document.getElementById('instructions').innerHTML
+//         },
+//         user_id: signInId
+//     }
+//     fetch(railsURL + 'users/' + signInId + '/recipes', {
+//         method: 'POST',
+//         headers: {
+//             "accept": "application/json",
+//             "Content-Type": "application/json"
+//         },
+//         body: JSON.stringify(strongParams)
+//     })
+//     .then(resp => resp.json())
+//     .then((recipe) => {
+//         Recipe.create(recipe.id, recipe.title, recipe.summary, recipe.instructions)
+//     })
     
-}
+// }
 
 
 // EVENT LISTENERS
@@ -139,7 +115,7 @@ const saveRecipeEvent = function(){
         if(signInId === undefined){
             alert('Sign in to save the recipe')
         }else if (haveRecipe()){
-            saveRecipe()
+            Recipe.saveRecipe()
         }
         else{
             alert('Pick a recipe to save.')
@@ -174,27 +150,11 @@ function backendUserRecipes(){
     
     let ul = document.createElement('ul')
     recipeDisplay().append(ul)
-    clearRecipe()
     fetch(railsURL + 'users/' + signInId + '/recipes')
         .then(resp => resp.json())
         .then((recipes) => {
             console.log(recipes)
             Recipe.createRecipes(recipes)
-            // recipes.forEach(recipe => {
-            //     //WHERE I WILL CREATE RECIPE OBJS
-            //     let li = document.createElement('li')
-            //     li.innerHTML = recipe.title
-            //     ul.append(li)
-            //     li.addEventListener('click', function(){
-            //         [title, summary, instructions] = createElements()
-            //         const elements = []
-            //         title.innerHTML = (recipe.title)
-            //         summary.innerHTML += "<br>" + recipe.summary
-            //         instructions.innerHTML = "<br>" + recipe.instructions
-            //         elements.push(title,summary,instructions)
-            //         appendDisplays(elements)
-            //     })
-            // })
     })
 }
 
