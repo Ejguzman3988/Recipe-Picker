@@ -24,13 +24,19 @@
         <script src="models/recipe.js"></script>
         <script src="models/user.js"></script>
         <script src="index.js"></script>
+        <script>  
+            document.addEventListener('DOMContentLoaded', function() {
+                var elems = document.querySelectorAll('.parallax');
+                var instances = M.Parallax.init(elems, options);
+            });
+        </script>
     <!-- END JAVASCRIPT-->
 
 
 </head>
 
 <!-- NAVIGATION -->
-    <nav class="blue-grey darken-3">
+    <nav class="red darken-4">
         <div class="container">
             <div id="recipe-nav">
                 
@@ -41,14 +47,14 @@
 
 
 <!-- MAIN CONTENT -->
-    <div class="container" style='width: 100%;'>
+    <div class="container" style="background-image: url('images/checkered.jpg'); width: 100%;">
         <body class='grey lighten-2'>
             <!-- RECIPE DISPLAY -->
-                <div class="container white lighten-4 z-depth-3" style='margin-top: 25px; margin-bottom: 25px; padding: 25px'>
+                <div class="container white lighten-4 z-depth-3" style='; margin-bottom: 25px; padding: 25px'>
                     <div class = 'row' id="signin">
-                        <div id="errors" class="panel teal lighten-2 col s6">
+                        <div id="errors" class="panel red darken-4 white-text col s12">
                             <ul id="error-lists">
-                                <p>Sign In/Sign Up</p>
+                                <h5 class='center yellow-text darken-4'>Sign In/Sign Up</h5>
                             </ul>
                         </div>
 
@@ -63,7 +69,7 @@
                             </div>
                             <br>
                             <br>
-                            <input type="submit" class="right" value="Log-In" id="log-in-button">
+                            <input type="submit" class="yellow darken-1 waves-effect waves-light btn-flat right" value="Log-In" id="log-in-button">
                         </form>
                     </div>
                     <div class='row' id='search'>
@@ -74,7 +80,7 @@
                             </div>
                             <br>
                             <br>
-                            <input type="submit" class="right" value="Search" id="searchButton">
+                            <input type="submit" class="yellow darken-1 waves-effect waves-light btn-flat right" value="Search" id="searchButton">
                         </form>
                     </div>
                     <div id="recipe-display">
@@ -84,18 +90,18 @@
 
             
             <!-- Footer -->
-                <footer class="page-footer blue-grey darken-3" >
+                <footer class="page-footer red darken-4 yellow-text" >
                     <div class="container">
                         <div class="row">
                             <div class="col l6 s12">
-                                <h5 class="white-text">Recipe Picker</h5>
-                                <p class="grey-text text-lighten-4">Website made by Eriberto Guzman.</p>
+                                <h5 class="black-text">Recipe Picker</h5>
+                                <p class="black-text text-lighten-4">Website made by Eriberto Guzman.</p>
                             </div>
                             <div class=" right">
-                                <h5 class="white-text">Links</h5>
+                                <h5 class="black-text">Links</h5>
                                 <ul>
-                                    <li><a class="grey-text text-lighten-3" href="https://github.com/Ejguzman3988">Github</a></li>
-                                    <li><a class="grey-text text-lighten-3" href="https://www.linkedin.com/in/eriberto-guzman-1505361a1/">LinkedIn</a></li>
+                                    <li><a class="black-text text-lighten-3" href="https://github.com/Ejguzman3988">Github</a></li>
+                                    <li><a class="black-text text-lighten-3" href="https://www.linkedin.com/in/eriberto-guzman-1505361a1/">LinkedIn</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -110,11 +116,6 @@
                 
             <!-- JavaScript at end of body for optimized loading-->
                 <script type="text/javascript" src="js/materialize.min.js"></script>
-                <div class="footer-copyright">
-                    <div class="container">
-                        © 2020 Copyright Text
-                    </div>
-                </div>
             <!-- END OF JAVASCRIPT OPTIMIZER -->
             
         </body>

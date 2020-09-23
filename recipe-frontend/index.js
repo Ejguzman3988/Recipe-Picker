@@ -141,10 +141,10 @@ const searchEvent = function(){
 document.addEventListener('DOMContentLoaded', function(){
     
     // Creates Navigation buttons
-    recipeNav().appendChild(buttonCreator('Random Recipe', '', ''))
-    recipeNav().appendChild(buttonCreator('Save Recipe', '', ''))
-    recipeNav().appendChild(buttonCreator('Clear Recipe'))
-    recipeNav().appendChild(buttonCreator('My Recipes'))
+    recipeNav().appendChild(buttonCreator('Random Recipe', 'black waves-effect waves-light btn-flat yellow-text', 'margin:10px'))
+    recipeNav().appendChild(buttonCreator('Save Recipe', 'black waves-effect waves-light btn-flat yellow-text', 'margin:10px'))
+    recipeNav().appendChild(buttonCreator('Clear Recipe', 'black waves-effect waves-light btn-flat yellow-text', 'margin:10px'))
+    recipeNav().appendChild(buttonCreator('My Recipes', 'black waves-effect waves-light btn-flat yellow-text', 'margin:10px'))
     
     // EVENTS
     randomRecipeEvent()

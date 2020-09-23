@@ -235,9 +235,6 @@ class Recipe{
         fetch(recipeURL + 'random?number=1&' + apiKey2)
         .then(response => response.json())
         .then(recipesArray => {
-            // title.innerHTML = (data.recipes[0].title)
-            // summary.innerHTML += "<br>" + data.recipes[0].summary
-            // instructions.innerHTML = "<br>" + data.recipes[0].instructions
             let randomRecipe = recipesArray.recipes[0]
             const newRecipe = new Recipe(randomRecipe.id, randomRecipe.title, randomRecipe.summary, randomRecipe.instructions)
             newRecipe.display()
