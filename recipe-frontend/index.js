@@ -105,7 +105,7 @@ const userRecipesEvent = function(){
         if (signInId === undefined){
             alert('Please Sign in to view your recipes')
         }else{
-            Recipe.displayRecipes()
+            Recipe.backendUserRecipes()
         }
     })
 }
@@ -126,11 +126,6 @@ const searchEvent = function(){
                 Recipe.createRecipes(recipes.results)
                 Recipe.displayRecipes(fetched)
             })
-        
-        // Display all results from fetch, add event listeners to results
-        // When click it takes the ID and fetches from https://api.spoonacular.com/recipes/{id}/information
-        // Uses simar display method from random recipe.
-        
         
         
         searchBar().value = ""

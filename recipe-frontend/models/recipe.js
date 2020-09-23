@@ -9,7 +9,7 @@ class Recipe{
         this.saved = saved
     }
 
-    display(){
+    display(search = false){
         const thisRecipe = this
         
         clearRecipe()
@@ -18,8 +18,8 @@ class Recipe{
         const title = document.createElement('h1')
         const summary = document.createElement('p')
         const instructions = document.createElement('div')
-        const editButton = buttonCreator('Edit Recipe', '', '')
-        const deleteButton = buttonCreator('Delete Recipe', '', '')
+        const editButton = buttonCreator('Edit Recipe', 'yellow darken-1 waves-effect waves-light btn-flat', 'margin:10px')
+        const deleteButton = buttonCreator('Delete Recipe', 'yellow darken-1 waves-effect waves-light btn-flat', 'margin:10px')
 
 
         // Set Ids
@@ -130,7 +130,8 @@ class Recipe{
 
         // Append to the display
         recipeDisplay().appendChild(title)
-        if (Recipe.all.find(recipe => recipe.title === this.title)){
+        const editRecipe = Recipe.all.find(recipe => recipe.title === this.title)
+        if (editRecipe && !search){
             recipeDisplay().appendChild(editButton)
             recipeDisplay().appendChild(deleteButton)
         }
@@ -168,7 +169,8 @@ class Recipe{
                             console.log(`https://api.spoonacular.com/recipes/${recipe.id}/information` + apiKey2)
                             recipe.summary = newRecipe.summary
                             recipe.instructions = newRecipe.instructions
-                            recipe.display()
+                            console.log(recipe)
+                            recipe.display(fetched)
                         })
                 })
             }else{
@@ -242,5 +244,19 @@ class Recipe{
     
     }
 
+    static backendUserRecipes(){
     
+        let ul = document.createElement('ul')
+        recipeDisplay().append(ul)
+        fetch(railsURL + 'users/' + signInId + '/recipes')
+            .then(resp => resp.json())
+            .then((recipes) => {
+                console.log(recipes)
+                Recipe.all = []
+                Recipe.createRecipes(recipes)
+                Recipe.displayRecipes()
+        })
     }
+
+    
+}

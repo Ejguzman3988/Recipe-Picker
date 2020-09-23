@@ -33,13 +33,14 @@ This will run your rails api backend server.
 
 After starting your server use the homepage at [localhost:300](http://localhost:3000) to navigate through the webpage and view the backend API in json.
     
+    $ cd ..
     $ open index.html
 
 or open your file in your browser to view your single page application.
 
 Sample video below: 
 
-[YouTube Demo](#)
+[YouTube Demo](https://www.youtube.com/watch?v=cfMpT2B4Ay8&feature=youtu.be)
 
 ## Contributing
 

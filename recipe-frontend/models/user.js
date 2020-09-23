@@ -42,7 +42,6 @@ class User{
         }else if (!(Array.isArray(username) || Array.isArray(password))){
             sessionForm().style.display = "none"
             signInId = id
-            User.backendUserRecipes()
             return true
         }else
         {
@@ -59,17 +58,5 @@ class User{
             })
             return false
         }
-    }
-
-    static backendUserRecipes(){
-    
-        let ul = document.createElement('ul')
-        recipeDisplay().append(ul)
-        fetch(railsURL + 'users/' + signInId + '/recipes')
-            .then(resp => resp.json())
-            .then((recipes) => {
-                console.log(recipes)
-                Recipe.createRecipes(recipes)
-        })
     }
 }
