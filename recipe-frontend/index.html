@@ -45,7 +45,6 @@
         <body class='grey lighten-2'>
             <!-- RECIPE DISPLAY -->
                 <div class="container white lighten-4 z-depth-3" style='margin-top: 25px; margin-bottom: 25px; padding: 25px'>
-                    
                     <div class = 'row' id="signin">
                         <div id="errors" class="panel teal lighten-2 col s6">
                             <ul id="error-lists">
@@ -67,7 +66,17 @@
                             <input type="submit" class="right" value="Log-In" id="log-in-button">
                         </form>
                     </div>
-
+                    <div class='row' id='search'>
+                        <form class='col s12' id='search-form' class="inline">
+                            <div class="input-field col s3">
+                                <input type="text" name="querySearch" id="searchBar" class="inline">
+                                <label for="searchBar">Search The Web: </label>
+                            </div>
+                            <br>
+                            <br>
+                            <input type="submit" class="right" value="Search" id="searchButton">
+                        </form>
+                    </div>
                     <div id="recipe-display">
                     </div>
                 </div>

@@ -1,6 +1,9 @@
+
+
 // FETCH REQUEST TO SPOONACULAR
 const recipeURL = "https://api.spoonacular.com/recipes/"
 const apiKey = 'apiKey=9e71a494718f43cf801f2261d416465e'
+const apiKey2 = 'apiKey=653b63c28115421887fd3e2f55dc36ce'
 
 // FETCH REQUEST TO RAILS BACKEND
 const railsURL = "http://localhost:3000/"
@@ -8,13 +11,17 @@ const railsURL = "http://localhost:3000/"
 // ELEMENT GRABBERS
 const recipeDisplay = () => document.querySelector("#recipe-display");
 const recipeNav = () => document.querySelector("#recipe-nav")
+const userRecipes = () => document.getElementById('My Recipes')
+const errors = () => document.getElementById('errors')
+const searchBar = () => document.getElementById('searchBar')
+
 const recipeButton = () => document.getElementById('Random Recipe')
 const saveRecipeButton = () => document.getElementById('Save Recipe')
 const clearRecipeButton = () => document.getElementById('Clear Recipe')
-const userRecipes = () => document.getElementById('My Recipes')
+const searchButton = () => document.getElementById('searchButton')
+
 const sessionForm = () => document.querySelector('form')
-const searchForm = () => document.getElementById('search')
-const errors = () => document.getElementById('errors')
+const searchForm = () => document.getElementById('search-form')
 var signInId
 
 
@@ -103,6 +110,33 @@ const userRecipesEvent = function(){
     })
 }
 
+const searchEvent = function(){
+        searchButton().addEventListener('click', function(e){
+        e.preventDefault()
+        let search = searchBar().value
+        
+
+        console.log('https://api.spoonacular.com/recipes/complexSearch?query=' + encodeURIComponent(search) + '&' + apiKey2)
+
+        fetch('https://api.spoonacular.com/recipes/complexSearch?query=' + encodeURIComponent(search) + '&' + apiKey2)
+            .then(resp => resp.json())
+            .then((recipes) => {
+                const fetched = true
+                console.log(recipes.results)
+                Recipe.createRecipes(recipes.results)
+                Recipe.displayRecipes(fetched)
+            })
+        
+        // Display all results from fetch, add event listeners to results
+        // When click it takes the ID and fetches from https://api.spoonacular.com/recipes/{id}/information
+        // Uses simar display method from random recipe.
+        
+        
+        
+        searchBar().value = ""
+        
+    })
+}
 
 document.addEventListener('DOMContentLoaded', function(){
     
@@ -118,6 +152,7 @@ document.addEventListener('DOMContentLoaded', function(){
     clearRecipeEvent()
     sessionFormEvent()
     userRecipesEvent()
+    searchEvent()
     
 });
 

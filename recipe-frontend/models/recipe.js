@@ -1,11 +1,12 @@
 class Recipe{
     static all = []
     
-    constructor(id, title, summary, instructions){
+    constructor(id, title, summary, instructions, saved = false){
         this.id = id;
         this.title = title;
         this.summary = summary;
         this.instructions = instructions;
+        this.saved = saved
     }
 
     display(){
@@ -139,17 +140,19 @@ class Recipe{
     }
 
     static createRecipes(recipes){
+        Recipe.all = []
         recipes.forEach(recipe => Recipe.create(recipe.id, recipe.title, recipe.summary, recipe.instructions))
     }
 
-    static create(id, title, summary, instructions){
-        let recipe = new Recipe(id, title, summary, instructions)
+
+    static create(id, title, summary, instructions, saved=false){
+        let recipe = new Recipe(id, title, summary, instructions, saved)
 
         Recipe.all.push(recipe)
         return recipe
     }
 
-    static displayRecipes(){
+    static displayRecipes(fetched = false){
         clearRecipe()
         let ul = document.createElement('ul')
         recipeDisplay().append(ul)
@@ -157,16 +160,29 @@ class Recipe{
             let li = document.createElement('li')
             li.innerHTML = recipe.title
             ul.append(li)
-            li.addEventListener('click', function(){
-                recipe.display()
-            })
+            if (fetched){
+                li.addEventListener('click', function(){
+                    fetch(`https://api.spoonacular.com/recipes/${recipe.id}/information?` +  apiKey2)
+                        .then(resp => resp.json())
+                        .then(newRecipe => {
+                            console.log(`https://api.spoonacular.com/recipes/${recipe.id}/information` + apiKey2)
+                            recipe.summary = newRecipe.summary
+                            recipe.instructions = newRecipe.instructions
+                            recipe.display()
+                        })
+                })
+            }else{
+                li.addEventListener('click', function(){
+                    recipe.display()
+                })
+            }
         })
     }
     static saveRecipe(){
         let recipeTitle = document.getElementById('title').innerText
         let recipe = this.find_by_title(recipeTitle)
         
-        if (recipe){
+        if (recipe.saved){
             alert('You have already saved this recipe.')
             return false
         }
@@ -189,7 +205,7 @@ class Recipe{
         })
         .then(resp => resp.json())
         .then((recipe) => {
-            let newRecipe = Recipe.create(recipe.id, recipe.title, recipe.summary, recipe.instructions)
+            let newRecipe = Recipe.create(recipe.id, recipe.title, recipe.summary, recipe.instructions, true)
             newRecipe.display()
         }) 
     }
@@ -216,7 +232,7 @@ class Recipe{
 
     static randomRecipe(){
 
-        fetch(recipeURL + 'random?number=1&' + apiKey)
+        fetch(recipeURL + 'random?number=1&' + apiKey2)
         .then(response => response.json())
         .then(recipesArray => {
             // title.innerHTML = (data.recipes[0].title)
